@@ -21,6 +21,10 @@ void main() {
     if(Strcmp(str,"mem")){mem();}
     if(Strcmp(str,"help")){help();}
     if(Strcmp(str,"cls")){cls();}
+    if(Strcmp(str,"quit")){quit();}
+    if(Strcmp(str,"exit")){exit();}
+    if(Strcmp(str,"reboot")){reboot();}
+
 
     // Write your code here
   }
@@ -76,31 +80,54 @@ void cls() {
 /////////////////////////////////////////////
 void mem() {
     int size;
-    int digit;
-    char c;
+    char* digit;
+    int temp = size;
+    int i = 0;
+    
     _asm{
         int 12h
         mov size,AX
     }
+    while(temp>0)
+    {
+      temp /= 10;
+      i++;
+    }
+    digit = (char*)malloc(i+1);
+    digit[i] = '\0';
     while(size>0)
     {
-        digit = size % 10;
-        c = digit + '0';
-        biosputs(&c);
-        size /= 10;
+      digit[i-1] = size%10 + '0';
+      i--;
+      size /= 10;
     }
+    biosputs(digit);
   // Write your code here
 }
 /////////////////////////////////////////////
 void quit() {
+  char* answer;
+  biosputs("Do you really want to quit our operating system? Y/N\n\r");
+  biosgets(answer);
+  if(Strcmp(answer,"Y") || Strcmp(answer,"y")){
+    _asm{
+      int 19h
+    }
+  }
   // Write your code here
 }
 /////////////////////////////////////////////
 void exit() {
+  _asm{
+    int 19h
+  }
   // Write your code here
 }
 /////////////////////////////////////////////
 void reboot() {
+  _asm{
+    int 19h
+  }
   // Write your code here
 }
 /////////////////////////////////////////////
@@ -108,16 +135,16 @@ int Strcmp(char *src, char *dst) {
     int i=0; int retval=0;
     while(src[i]!='\0'&&dst[i]!='\0')
     {
-        if(src[i]==dst[i])
-        {
-            i++;
-            retval = 1;
-        }
-        else
-           {
-               retval = 0;
-               break;
-           }
+      if(src[i]==dst[i])
+      {
+        i++;
+        retval = 1;
+      }
+      else
+      {
+        retval = 0;
+        break;
+      }
     }
     return retval;
   // Write your code here
